@@ -1388,6 +1388,9 @@
     <script>
         let cart = [];
         let discoveredProducts = [];
+        let discoveredCategories = [];
+        let discoveredSubcategories = [];
+        let blogs = [];
         let categories = new Map();
         let activeCategory = 'all';
         let currentUser = null;
@@ -1792,21 +1795,44 @@
             categoriesContainer.style.display = 'none';
         }
 
+        async function fetchBlogs() {
+            try {
+                const response = await fetch('https://ecom-backend-alpha-rust.vercel.app/blogs');
+                if (response.ok) {
+                    const blogsData = await response.json();
+                    // Transform blogs data to include required fields
+                    return Array.isArray(blogsData) ? blogsData.map((blog, index) => ({
+                        id: blog.BlogID || index + 1,
+                        title: blog.Title || 'Blog Post',
+                        content: blog.Content || '',
+                        date: blog.PublishDate ? new Date(blog.PublishDate).toLocaleDateString() : new Date().toLocaleDateString(),
+                        author: blog.AdminID ? `Admin ${blog.AdminID}` : 'Admin',
+                        image: `https://picsum.photos/seed/blog-${index}/400/300`
+                    })) : [];
+                }
+            } catch (error) {
+                console.error('Error fetching blogs:', error);
+            }
+            return [];
+        }
+
         async function initializeStore() {
             // Show loading skeleton
             showLoadingSkeleton();
             
-            const [categories, subcategories, products] = await Promise.all([
+            const [categories, subcategories, products, blogsData] = await Promise.all([
                 discoverCategories(),
                 discoverSubcategories(),
-                discoverProducts()
+                discoverProducts(),
+                fetchBlogs()
             ]);
 
-            console.log('Store initialized with:', { categories, subcategories, products });
+            console.log('Store initialized with:', { categories, subcategories, products, blogsData });
 
             discoveredCategories = categories;
             discoveredSubcategories = subcategories;
             discoveredProducts = products;
+            blogs = blogsData;
 
             displayCategoryNav(categories);
             displayProducts(products, categories, subcategories);
