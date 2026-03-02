@@ -1404,67 +1404,54 @@
           5: "https://images.unsplash.com/photo-1700223255805-df7b526603bf?w=800&q=80"
         };
 
+        // fetch all categories with a single request
         async function discoverCategories() {
-            const attempts = Array.from({ length: 3 }, (_, i) => i + 1); // Changed to 3 since we know we have 3 categories
-            
             try {
-                const categoryResults = await Promise.all(
-                    attempts.map(id => 
-                        fetch(`https://ecom-backend-alpha-rust.vercel.app/category?id=${id}`)
-                            .then(response => response.ok ? response.json() : null)
-                            .catch(() => null)
-                    )
-                );
-
-                const validCategories = categoryResults.filter(cat => cat !== null);
-                console.log('Valid Categories:', validCategories);
-                return validCategories;
+                const response = await fetch('https://ecom-backend-alpha-rust.vercel.app/categories');
+                if (response.ok) {
+                    const cats = await response.json();
+                    console.log('Valid Categories:', cats);
+                    return cats;
+                }
             } catch (error) {
                 console.error('Error discovering categories:', error);
-                return [];
             }
+            return [];
         }
 
+        // fetch all subcategories in one go
         async function discoverSubcategories() {
-            const attempts = Array.from({ length: 20 }, (_, i) => i + 1);
-            
             try {
-                const subcategoryResults = await Promise.all(
-                    attempts.map(id => 
-                        fetch(`https://ecom-backend-alpha-rust.vercel.app/subcategory?id=${id}`)
-                            .then(response => response.ok ? response.json() : null)
-                            .catch(() => null)
-                    )
-                );
-
-                const validSubcategories = subcategoryResults.filter(subcat => subcat !== null);
-                console.log('Subcategories found:', validSubcategories);
-                return validSubcategories;
+                const response = await fetch('https://ecom-backend-alpha-rust.vercel.app/subcategories');
+                if (response.ok) {
+                    const subs = await response.json();
+                    console.log('Subcategories found:', subs);
+                    return subs;
+                }
             } catch (error) {
                 console.error('Error discovering subcategories:', error);
-                return [];
             }
+            return [];
         }
 
+        // fetch all products in one request
         async function discoverProducts() {
-            const attempts = Array.from({ length: 20 }, (_, i) => i + 1);
-            
             try {
-                const products = await Promise.all(
-                    attempts.map(id => 
-                        fetch(`https://ecom-backend-alpha-rust.vercel.app/product?id=${id}`)
-                            .then(response => response.ok ? response.json() : null)
-                            .catch(() => null)
-                    )
-                );
-
-                const validProducts = products.filter(product => product !== null);
-                console.log('Products found:', validProducts);
-                return validProducts;
+                const response = await fetch('https://ecom-backend-alpha-rust.vercel.app/products');
+                if (response.ok) {
+                    let products = await response.json();
+                    // ensure prices are numbers to avoid toFixed errors
+                    products = products.map(p => ({
+                        ...p,
+                        Price: p.Price !== undefined ? parseFloat(p.Price) : 0
+                    }));
+                    console.log('Products found:', products);
+                    return products;
+                }
             } catch (error) {
                 console.error('Error discovering products:', error);
-                return [];
             }
+            return [];
         }
 
         function displayCategoryNav(categories) {
@@ -1819,23 +1806,47 @@
         async function initializeStore() {
             // Show loading skeleton
             showLoadingSkeleton();
-            
-            const [categories, subcategories, products, blogsData] = await Promise.all([
-                discoverCategories(),
-                discoverSubcategories(),
-                discoverProducts(),
-                fetchBlogs()
-            ]);
 
-            console.log('Store initialized with:', { categories, subcategories, products, blogsData });
+            try {
+                const response = await fetch('https://ecom-backend-alpha-rust.vercel.app/store-data');
+                if (response.ok) {
+                    const { categories, subcategories, products } = await response.json();
+                    // convert prices to numbers
+                    const prods = products.map(p => ({ ...p, Price: p.Price !== undefined ? parseFloat(p.Price) : 0 }));
+                    console.log('Store initialized with data:', { categories, subcategories, prods });
 
-            discoveredCategories = categories;
-            discoveredSubcategories = subcategories;
-            discoveredProducts = products;
-            blogs = blogsData;
+                    discoveredCategories = categories;
+                    discoveredSubcategories = subcategories;
+                    discoveredProducts = prods;
+                } else {
+                    // fallback if aggregated endpoint fails
+                    console.warn('store-data fetch failed, falling back to individual calls');
+                    const [categories, subcategories, products, blogsData] = await Promise.all([
+                        discoverCategories(),
+                        discoverSubcategories(),
+                        discoverProducts(),
+                        fetchBlogs()
+                    ]);
+                    discoveredCategories = categories;
+                    discoveredSubcategories = subcategories;
+                    discoveredProducts = products;
+                }
+            } catch (err) {
+                console.error('Error initializing store via store-data:', err);
+                // fallback as above
+                const [categories, subcategories, products, blogsData] = await Promise.all([
+                    discoverCategories(),
+                    discoverSubcategories(),
+                    discoverProducts(),
+                    fetchBlogs()
+                ]);
+                discoveredCategories = categories;
+                discoveredSubcategories = subcategories;
+                discoveredProducts = products;
+            }
 
-            displayCategoryNav(categories);
-            displayProducts(products, categories, subcategories);
+            displayCategoryNav(discoveredCategories);
+            displayProducts(discoveredProducts, discoveredCategories, discoveredSubcategories);
         }
         
         function showLoadingSkeleton() {
@@ -1871,7 +1882,8 @@
             initializeStore();
             displayFeaturedBlogs();
             updateLoyaltyPoints();
-            setInterval(updateLoyaltyPoints, 10000);
+            // poll loyalty points infrequently (once per minute) to avoid excess connections
+            setInterval(updateLoyaltyPoints, 60000);
             
             // Navbar scroll effect
             window.addEventListener('scroll', () => {
