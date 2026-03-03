@@ -1489,6 +1489,8 @@
         function displayProducts(products, categories, subcategories) {
             const container = document.getElementById('categoriesContainer');
             
+            console.log('displayProducts called:', { products: products.length, categories: categories.length, subcategories: subcategories.length });
+            
             if (activeCategory === 'all') {
                 let html = '';
                 categories.forEach(category => {
@@ -1540,6 +1542,10 @@
                         `;
                     }
                 });
+                
+                if (!html) {
+                    html = '<p style="text-align:center;padding:2rem;">No products found.</p>';
+                }
                 container.innerHTML = html;
             } else {
                 const category = categories.find(c => c.CategoryID === Number(activeCategory));
