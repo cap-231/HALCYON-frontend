@@ -1407,11 +1407,11 @@
 
         // Place this at the top of your main JS or inside a <script> tag before rendering products
         const productImages = {
-          1: "https://images.unsplash.com/photo-1608256246200-53e635b5b65f?q=80&w=800",
-          2: "https://images.unsplash.com/photo-1715539133733-e2a654bfc0c6?q=80&w=800",
-          3: "https://images.unsplash.com/photo-1672865451494-81c38f3aec13?w=800&q=80",
-          4: "https://images.unsplash.com/photo-1598033129183-c4f50c736f10?q=80&w=800",
-          5: "https://images.unsplash.com/photo-1700223255805-df7b526603bf?w=800&q=80"
+          1: "https://picsum.photos/seed/boots1/400/500",
+          2: "https://picsum.photos/seed/slippers2/400/500",
+          3: "https://picsum.photos/seed/formal3/400/500",
+          4: "https://picsum.photos/seed/shirt4/400/500",
+          5: "https://picsum.photos/seed/fedora5/400/500"
         };
 
         // fetch all categories with a single request
@@ -1509,21 +1509,23 @@
                                 </div>
                                 <div class="products-grid stagger-children">
                                     ${categoryProducts.map(product => `
-                                        <div class="product-card">
-                                            <div class="product-image-wrapper">
+                                        <div class="product-card" style="display:block !important; visibility:visible !important; opacity:1 !important;">
+                                            <div class="product-image-wrapper" style="display:block !important;">
                                                 ${product.Discount ? '<span class="product-badge sale">Sale</span>' : '<span class="product-badge new">New</span>'}
                                                 <a href="product.html?id=${product.ProductID}">
                                                     <img src="${productImages[product.ProductID] || product.image || `https://picsum.photos/seed/${product.ProductID}/400/500`}" 
                                                          alt="${product.Name}" 
-                                                         class="product-image">
+                                                         class="product-image"
+                                                         style="display:block !important; width:100% !important; height:200px !important; object-fit:cover !important;">
                                                 </a>
                                                 <button class="wishlist-btn" 
-                                                    onclick="addToWishlist(${product.ProductID}, '${product.Name}', ${product.Price}); event.preventDefault();">
+                                                    onclick="addToWishlist(${product.ProductID}, '${product.Name}', ${product.Price}); event.preventDefault();"
+                                                    style="opacity:1 !important; display:flex !important;">
                                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;">
                                                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                                                     </svg>
                                                 </button>
-                                                <button class="quick-add-btn" onclick="addToCart(${product.ProductID}, '${product.Name}', ${product.Price})">
+                                                <button class="quick-add-btn" onclick="addToCart(${product.ProductID}, '${product.Name}', ${product.Price})" style="opacity:1 !important;">
                                                     Quick Add
                                                 </button>
                                             </div>
@@ -1560,21 +1562,23 @@
                         </div>
                         <div class="products-grid stagger-children">
                             ${categoryProducts.map(product => `
-                                <div class="product-card">
-                                    <div class="product-image-wrapper">
+                                <div class="product-card" style="display:block !important; visibility:visible !important; opacity:1 !important;">
+                                    <div class="product-image-wrapper" style="display:block !important;">
                                         ${product.Discount ? '<span class="product-badge sale">Sale</span>' : '<span class="product-badge new">New</span>'}
                                         <a href="product.html?id=${product.ProductID}">
                                             <img src="${productImages[product.ProductID] || product.image || `https://picsum.photos/seed/${product.ProductID}/400/500`}" 
                                                  alt="${product.Name}" 
-                                                 class="product-image">
+                                                 class="product-image"
+                                                 style="display:block !important; width:100% !important; height:200px !important; object-fit:cover !important;">
                                         </a>
                                         <button class="wishlist-btn" 
-                                            onclick="addToWishlist(${product.ProductID}, '${product.Name}', ${product.Price}); event.preventDefault();">
+                                            onclick="addToWishlist(${product.ProductID}, '${product.Name}', ${product.Price}); event.preventDefault();"
+                                            style="opacity:1 !important; display:flex !important;">
                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;">
                                                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                                             </svg>
                                         </button>
-                                        <button class="quick-add-btn" onclick="addToCart(${product.ProductID}, '${product.Name}', ${product.Price})">
+                                        <button class="quick-add-btn" onclick="addToCart(${product.ProductID}, '${product.Name}', ${product.Price})" style="opacity:1 !important;">
                                             Quick Add
                                         </button>
                                     </div>
