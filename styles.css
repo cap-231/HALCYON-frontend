@@ -584,9 +584,10 @@ img {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   border-radius: var(--radius-md);
-  opacity: 0;
-  transform: translateY(10px);
+  opacity: 1;
+  transform: translateY(0);
   transition: all var(--transition-base);
+  text-align: center;
 }
 
 .product-card:hover .quick-add-btn {
@@ -608,11 +609,11 @@ img {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-surface);
-  border-radius: var(--radius-full);
+  background: white;
+  border-radius: 50%;
   color: var(--color-text-secondary);
-  opacity: 0;
-  transform: translateY(-10px);
+  opacity: 1;
+  transform: translateY(0);
   transition: all var(--transition-fast);
   box-shadow: var(--shadow-sm);
   z-index: 2;
