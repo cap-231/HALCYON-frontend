@@ -182,6 +182,9 @@
                 if (res.ok) {
                     this.textContent = 'Added to Wishlist!';
                     setTimeout(() => { this.textContent = 'Add to Wishlist'; }, 1200);
+                } else if (res.status === 409) {
+                    this.textContent = 'Already in Wishlist!';
+                    setTimeout(() => { this.textContent = 'Add to Wishlist'; }, 1200);
                 } else {
                     alert(data.error || 'Could not add to wishlist');
                 }
