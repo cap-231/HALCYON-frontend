@@ -1178,13 +1178,23 @@
         </div>
     </nav>
 
+    <div class="container">
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">Welcome to Halcyon</h1>
+                <p class="hero-subtitle">Discover premium fashion for the modern lifestyle</p>
+                <a href="#" class="hero-btn">Shop Now</a>
+            </div>
+        </section>
+    </div>
+
     <main class="main-content">
         <div class="container">
             <div class="category-nav" id="categoryNav">
                 <!-- Categories will be added here dynamically -->
             </div>
 
-            <div id="categoriesContainer">
+            <div id="categoriesContainer" class="products-section-wrapper">
                 <!-- Categories and their products will be added here dynamically -->
             </div>
 
@@ -1599,7 +1609,7 @@
             }
 
             try {
-                console.log('Adding to cart:', { id, name, price, user }); // Debug log
+                console.log('Adding to cart:', { id, name, price, user });
                 const response = await fetch('https://ecom-backend-alpha-rust.vercel.app/cart/add', {
                     method: 'POST',
                     headers: { 
@@ -1608,24 +1618,23 @@
                     },
                     body: JSON.stringify({
                         productId: id,
-                    quantity: 1
+                        quantity: 1
                     })
                 });
                 
                 if (!response.ok) {
                     const errorData = await response.json();
-                    console.error('Server error:', errorData); // Debug log
+                    console.error('Server error:', errorData);
                     throw new Error(errorData.error || 'Failed to add to cart');
-            }
+                }
             
                 const data = await response.json();
                 showSuccessMessage('Added to cart!');
-                // Update cart items and count
                 cart = await fetchCartItems();
-            showAddedToCartAnimation();
-            updateCartCount();
+                showAddedToCartAnimation();
+                updateCartCount();
             } catch (err) {
-                console.error('Error adding to cart:', err); // Debug log
+                console.error('Error adding to cart:', err);
                 showErrorMessage(err.message || 'Server error');
             }
         }
@@ -2110,8 +2119,8 @@
                 });
                 
                 if (response.ok) {
-                showSuccessMessage('Added to wishlist!');
-                updateWishlistCount();
+                    showSuccessMessage('Added to wishlist!');
+                    updateWishlistCount();
                 } else {
                     const data = await response.json();
                     showErrorMessage(data.error || 'Could not add to wishlist');
