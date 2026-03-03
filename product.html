@@ -12,8 +12,8 @@
         .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--color-text-secondary); font-size: 0.875rem; font-weight: 500; margin-bottom: 2rem; transition: color var(--transition-fast); }
         .back-link:hover { color: var(--color-accent); }
         .product-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; background: var(--color-surface); border-radius: var(--radius-xl); padding: 2rem; box-shadow: var(--shadow-sm); }
-        .product-detail-image { aspect-ratio: 4/5; border-radius: var(--radius-lg); overflow: hidden; background: var(--color-bg-alt); }
-        .product-detail-image img { width: 100%; height: 100%; object-fit: cover; }
+        .product-detail-image { aspect-ratio: 4/5; border-radius: var(--radius-lg); overflow: hidden; background: var(--color-bg-alt); display: flex; align-items: center; justify-content: center; }
+        .product-detail-image img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
         .product-detail-info { display: flex; flex-direction: column; justify-content: center; }
         .product-detail-title { font-size: 2rem; font-weight: 600; color: var(--color-text); margin-bottom: 1rem; line-height: 1.2; }
         .product-detail-price { font-size: 1.75rem; font-weight: 700; color: var(--color-accent); margin-bottom: 1.5rem; }
@@ -120,19 +120,21 @@
             document.getElementById('productDiscount').textContent = product.Discount ? `Discount: ${product.Discount}%` : '';
             
             const img = document.getElementById('productImage');
-            if (img) {
-                img.src = productImages[product.ProductID] || `https://picsum.photos/seed/product${product.ProductID}/400/300`;
+            if (img && productImages[product.ProductID]) {
+                img.src = productImages[product.ProductID];
+                img.alt = product.Name;
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'cover';
+            } else if (img) {
+                img.src = `https://picsum.photos/seed/product${product.ProductID}/400/500`;
                 img.alt = product.Name;
             }
-            
-            if (product.ProductID == 5) {
-                img.style.objectFit = 'contain';
-                img.style.background = '#fff';
-                img.style.height = '300px';
-            } else {
-                img.style.objectFit = 'cover';
-                img.style.height = '200px';
-            }
+        } catch (err) {
+            console.error('Error fetching product:', err);
+            document.getElementById('productName').textContent = 'Error loading product.';
+        }
+        
         // Add to Cart
         document.getElementById('addToCartBtn').onclick = async function() {
             const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
@@ -147,14 +149,14 @@
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${user.token}`
                     },
-                    body: JSON.stringify({ productId: product.ProductID, quantity: 1 })
+                    body: JSON.stringify({ productId: productId, quantity: 1 })
                 });
                 const data = await res.json();
                 if (res.ok) {
                     this.textContent = 'Added to Cart!';
                     setTimeout(() => { this.textContent = 'Add to Cart'; }, 1200);
                 } else {
-                    // alert(data.error || 'Could not add to cart');
+                    alert(data.error || 'Could not add to cart');
                 }
             } catch (err) {
                 alert('Server error');
@@ -174,7 +176,7 @@
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${user.token}`
                     },
-                    body: JSON.stringify({ productId: product.ProductID })
+                    body: JSON.stringify({ productId: productId })
                 });
                 const data = await res.json();
                 if (res.ok) {
