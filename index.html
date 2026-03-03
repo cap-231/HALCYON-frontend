@@ -2139,6 +2139,13 @@
                         icon.setAttribute('fill', '#e74c3c');
                         icon.setAttribute('stroke', '#e74c3c');
                     }
+                } else if (response.status === 409) {
+                    showSuccessMessage('Already in wishlist!');
+                    const icon = document.getElementById('wishlist-icon-' + productId);
+                    if (icon) {
+                        icon.setAttribute('fill', '#e74c3c');
+                        icon.setAttribute('stroke', '#e74c3c');
+                    }
                 } else {
                     const data = await response.json();
                     showErrorMessage(data.error || 'Could not add to wishlist');
